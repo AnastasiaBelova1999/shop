@@ -88,7 +88,7 @@ def logout():
 def req():
     booking = db.select(None, "booking")
     date = db.select("date", "booking")
-    login = dict(db.select(["id", "login"], "users"))
+    login = dict(db.select(["id","login"], "users"))
     clothes = dict(db.select(["id", "title"], "clothes"))
     shop = dict(db.select(["id", "title"], "shop"))
     status = dict(db.select(["id","title"], "status"))
@@ -114,17 +114,16 @@ def sub_new():
         return render_template("new.html",  status=status, clothes=clothes, shop=shop)
     elif request.method == 'POST':
         date = request.form.get("date")
-        login_id = request.form.get("login_users")
         clothes_id = request.form.get("id_clothes")
         shop_id = request.form.get("id_shop")
         status_id = request.form.get("id_status")
 
-        if date and login_id and clothes_id and shop_id and status_id:
+        if date and clothes_id and shop_id and status_id:
             cursor = db.db.cursor(named_tuple=True)
             try:
                 cursor.execute(
-                    "INSERT INTO `booking` (`date`, `id_login`, `id_clothes`, `id_shop`, `id_status`) VALUES ('%s','%s','%s','%s','%s')" % (
-                       date, login_id, clothes_id, shop_id, status_id))
+                    "INSERT INTO `booking` (`date`,`id_login`, `id_clothes`, `id_shop`, `id_status`) VALUES ('%s','%s','%s','%s','%s')" % (
+                       date, flask_login.current_user.id, clothes_id, shop_id, status_id))
                 db.db.commit()
                 cursor.close()
                 return redirect("/booking")
@@ -132,14 +131,67 @@ def sub_new():
                 clothes = db.select(["id", "title"], "clothes")
                 shop = db.select(["id", "title"], "shop")
                 status = db.select(["id", "title"], "status")
-                return render_template("new.html", insert_false=True, clothes=clothes, shop=shop,
+                return render_template("new.html", login=flask_login.current_user.login, insert_false=True, clothes=clothes, shop=shop,
                                        status=status)
         else:
             clothes = db.select(["id", "title"], "clothes")
             shop = db.select(["id", "title"], "shop")
             status = db.select(["id", "title"], "status")
-            return render_template("new.html", insert_false=True, clothes=clothes, shop=shop,
+            return render_template("new.html", login=flask_login.current_user.login, insert_false=True, clothes=clothes, shop=shop,
                                    status=status)
+
+@app.route('/book/edit', methods=['POST'])
+@login_required
+def list_edit():
+    try:
+        booking_id = request.form.get("id")
+        date = request.form.get("date")
+        login = request.form.get("login_users")
+        clothes_id = request.form.get("id_clothes")
+        shop_id = request.form.get("id_shop")
+        status_id = request.form.get("id_status")
+        statuss = dict(db.select(["id", "title"],"status"))
+        clothess = dict(db.select(["id", "title"],"clothes"))
+        shops = dict(db.select(["id","title"], "shop"))
+
+        sub = {
+            'booking_id': int(booking_id),
+            'date': date,
+            'login_users': login,
+            'clothes_id': int(clothes_id),
+            'shop_id': int(shop_id),
+            'status_id': int(status_id),
+        }
+        return render_template("book_edit.html", sub=sub, clothess=clothess, shops=shops, statuss=statuss,
+                               login=flask_login.current_user.login, booking_id=booking_id)
+
+    except Exception:
+        return redirect(url_for("booking"))
+
+
+@app.route('/book/edit/submit', methods=['POST'])
+@login_required
+def sub_edit_submit():
+    list_id = request.form.get("list_id")
+    date = request.form.get("date")
+    login = request.form.get("login_users")
+    clothes_id = request.form.get("id_clothes")
+    shop_id = request.form.get("id_shop")
+    status_id = request.form.get("id_status")
+
+    if date and clothes_id and shop_id and status_id:
+        cursor = db.db.cursor(named_tuple=True)
+        try:
+            cursor.execute(
+                "UPDATE `booking` SET  `date` = '%s', `id_clothes` = '%s', `id_shop` = '%s',`id_status` = '%s' WHERE `booking`.`id` = '%s'" % (
+                    date, clothes_id, shop_id, status_id, list_id))
+            db.db.commit()
+            cursor.close()
+            return redirect("/booking")
+        except Exception:
+            return redirect("/booking")
+    else:
+        return redirect("/booking")
 
 if __name__ == '__main__':
     app.run()

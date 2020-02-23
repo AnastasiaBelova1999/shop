@@ -20,10 +20,10 @@
         <a class="nav-link" href="/booking">Список обращений</a>
       </li>
         <li class="nav-item">
-        <a class="nav-link" href="/req/new">Добавить обращение</a>
+        <a class="nav-link" href="/book/new">Добавить обращение</a>
       </li>
     </ul>
-      <h4 class="text-white mr-3">{{ login }}</h4>
+      <h4 class="text-white mr-3">{{ login_user }}</h4>
       <a href="logout"><button type="button" class="btn btn-light">Разлогинься</button></a>
   </div>
 </nav>
@@ -46,7 +46,7 @@
   {% for book in booking %}
   <tr>
       <td>{{ book.date}}</td>
-      <td>{{ login[book.id_login] }}</td>
+      <td>{{ login[book.id_login]}}</td>
       <td>{{ clothes[book.id_clothes]}}</td>
       <td>{{ shop[book.id_shop]}}</td>
       <td>{{ status[book.id_status]}}</td>
@@ -58,6 +58,16 @@
                         <input type="hidden" name="id_shop" value="{{ book.id_shop}}">
                         <input type="hidden" name="id_status" value="{{ book.id_status }}">
 						<button type="hidden" class="btn btn-primary">delete</button>
+  </form></td>
+
+        <td><form action="/book/edit" method="POST">
+                        <input type = "hidden" name="id" value="{{ book.id }}">
+                        <input type="hidden" name="date" value="{{ book.date}}">
+                        <input type="hidden" name="login" value="{{ book.id_login}}">
+                        <input type="hidden" name="id_clothes" value="{{ book.id_clothes}}">
+                        <input type="hidden" name="id_shop" value="{{ book.id_shop}}">
+                        <input type="hidden" name="id_status" value="{{ book.id_status }}">
+						<button type="hidden" class="btn btn-primary">edit</button>
   </form></td>
   </tr>
   {% endfor %}

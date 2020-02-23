@@ -17,45 +17,35 @@
         <a class="nav-link" style="color:pink;"></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/booking">Список обращений</a>
-      </li>
-        <li class="nav-item">
-        <a class="nav-link" href="/book/new">Добавить обращение</a>
+        <a class="nav-link" href="booking">Список обращений</a>
+          <a class="nav-link" href="/book/new">Добавить обращение</a>
       </li>
     </ul>
-        {% if authorization %}
-      <h4 class="text-white mr-3">{{ login }}</h4>
-      <a href="logout"><button type="button" class="btn btn-light">Выйти</button></a>
-        {% endif %}
+      <h4 class="text-white mr-3">{{ login_user }}</h4>
+      <a href="logout"><button type="button" class="btn btn-light">Разлогинься</button></a>
   </div>
 </nav>
 <a class="navbar-brand" href="/">Белова Анастасия</a>
-<div class="col-md-4 my-4 border border-white rounded container text-center" id="main">
+    <div class="content text-center">
+        <h4 class="text-center">Add edit</h4>
+         <div class="col-md-4 my-4 border border-white rounded container text-center" id="main">
 
     <div class="container text-center">
-        <form class='form' method="post" action="/book/new">
-
+        <div class="container text-center">
+        <form class='form' method="post" action="/book/edit/submit">
             <div class="form-group">
                 <label for="date">Дата</label>
-                <input type="date" class="form-control" id="date" placeholder="date" name="date" value="{{ date }}">
+                <input type="date" class="form-control" id="date" placeholder="date" name="date" value="{{ sub["date"] }}">
             </div>
 
             <div class="form-group">
                 <label for="id_clothes">Одежда</label>
-                <select name = "id_clothes">
-                    {% for cloth in clothes %}
-                     <option value={{ cloth.id }}>{{ cloth.title }}</option>
-                     {% endfor %}
-                </select>
+                <input type="text" class="form-control" id="id_clothes" placeholder="{{clothess[sub["clothes_id"]]}}" name="id_clothes" value="{{sub["clothes_id"] }}" readonly>
             </div>
 
             <div class="form-group">
-                <label for="id_shop">Магазин</label>
-                <select name = "id_shop">
-                    {% for sh in shop %}
-                     <option value={{ sh.id }}>{{ sh.title }}</option>
-                     {% endfor %}
-                </select>
+                <label for="id_clothes">Магазин</label>
+                <input type="text" class="form-control" id="id_shop" placeholder="{{shops[sub["shop_id"]]}}" name="id_shop" value="{{[sub["shop_id"]]}}" readonly>
             </div>
 
             <div class="form-group">
@@ -67,12 +57,12 @@
                 </select>
             </div>
 
-            <input type="hidden" value="{{ id }}" name = "older_id">
-             <input type=submit class='btn btn-success' value='Добавить'>
+            <input type="hidden" value="{{ sub["list_id"]  }}" name = "id">
+            <input type=submit class='btn btn-success' value='Изменить'>
         </form>
     </div>
-</div>
-<thead>
+    </div>
+         <thead>
 <div role="alert" aria-live="assertive" aria-atomic="true" class="toast" data-autohide="false" id ="error_insert">
   <div class="toast-header">
     <strong class="mr-auto">ADMIN</strong>
@@ -85,6 +75,9 @@
     Что то не так проверьте данные или попробуйте позже
   </div>
 </div>
+         </thead>
+         </div>
+    </div>
 </body>
 {% if insert_false %}
 <script>
